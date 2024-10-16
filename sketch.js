@@ -1,11 +1,12 @@
 let objetos = [];
+let CuantosObjetos = 100;
 let contadorPiedra = 0;
 let contadorPapel = 0;
 let contadorTijeras = 0;
 let contadorLagarto = 0;
 let contadorSpock = 0;
-const CuantosObjetos = 150;
-const tamanio = 15;
+let terminado = false;
+const tamanio = 10;
 
 const reglas = {
   piedra: {
@@ -40,6 +41,14 @@ const reglas = {
   },
 };
 
+let history = {
+  piedra: [],
+  papel: [],
+  tijeras: [],
+  lagarto: [],
+  spock: [],
+};
+
 function setup() {
   createCanvas(800, 600);
   for (let i = 0; i < CuantosObjetos; i++) {
@@ -52,7 +61,8 @@ function draw() {
   background("White");
 
   updateCountersAndCollisions();
-
+  updateHistory();
+  drawGraph();
   displayCounters();
 }
 
@@ -63,7 +73,6 @@ class Objeto {
     this.velX = random(-3, 3);
     this.velY = random(-3, 3);
     this.tipo = random(["piedra", "papel", "tijeras", "lagarto", "spock"]);
-    //this.tipo = random(["piedra", "papel", "tijeras"]);
     this.tamaño = tamanio;
   }
 
@@ -101,11 +110,9 @@ class Objeto {
   }
 
   bounceWith(otroObjeto) {
-    // Intercambiar velocidades (rebote)
     [this.velX, otroObjeto.velX] = [otroObjeto.velX, this.velX];
     [this.velY, otroObjeto.velY] = [otroObjeto.velY, this.velY];
 
-    // Asegurarse de que no se junten los objetos
     let overlap =
       this.tamaño * 2 - dist(this.x, this.y, otroObjeto.x, otroObjeto.y);
     if (overlap > 0) {
@@ -120,7 +127,7 @@ class Objeto {
     }
   }
 
-  transformar(otroObjeto) {
+  updateType(otroObjeto) {
     const ganador = reglas[this.tipo][otroObjeto.tipo];
     if (ganador) {
       this.tipo = ganador;
@@ -132,7 +139,7 @@ class Objeto {
 function displayCounters() {
   textSize(16);
   let labels = ["🪨Piedra", "📜Papel", "✂️Tijeras", "🦎Lagarto", "👽Spock"];
-  let valores = [
+  let values = [
     contadorPiedra,
     contadorPapel,
     contadorTijeras,
@@ -142,7 +149,7 @@ function displayCounters() {
   let espaciado = width / (labels.length + 1);
 
   for (let i = 0; i < labels.length; i++) {
-    mostrarContador(labels[i], valores[i], espaciado * (i + 1), height - 20);
+    mostrarContador(labels[i], values[i], espaciado * (i + 1), height - 20);
   }
 }
 
@@ -173,8 +180,7 @@ function updateObjects(quadtree) {
       let objeto2 = punto.userData;
       if (objeto2 != objeto1) {
         if (objeto1.checkCollision(objeto2)) {
-          objeto1.transformar(objeto2);
-          // Rebote tras colisión
+          objeto1.updateType(objeto2);
           objeto1.bounceWith(objeto2);
         }
       }
@@ -206,13 +212,11 @@ function updateCounters() {
 }
 
 function mostrarContador(label, valor, x, y) {
-  // Dibujamos un cuadro semitransparente de fondo para el texto
   noStroke();
-  fill("NavajoWhite");
+  fill(255, 222, 173, 150);
   rectMode(CENTER);
   rect(x, y, 115, 20, 10);
 
-  // Selección de color según el valor
   let color =
     valor === 0
       ? "OrangeRed"
@@ -221,6 +225,58 @@ function mostrarContador(label, valor, x, y) {
       : "Indigo";
   fill(color);
 
-  // Mostrar el texto
+  if (color == "LimeGreen") {
+    terminado = true;
+  }
+
   text(`${label}: ${valor}`, x, y);
+}
+
+function updateHistory() {
+  let counts = {
+    piedra: 0,
+    papel: 0,
+    tijeras: 0,
+    lagarto: 0,
+    spock: 0,
+  };
+
+  for (let obj of objetos) {
+    counts[obj.tipo]++;
+  }
+
+  if (!terminado) {
+    history.piedra.push(counts.piedra);
+    history.papel.push(counts.papel);
+    history.tijeras.push(counts.tijeras);
+    history.lagarto.push(counts.lagarto);
+    history.spock.push(counts.spock);
+  }
+}
+
+function drawGraph() {
+  let maxIterations = history.piedra.length;
+  let graphHeight = 200;
+  let graphWidth = width - 20;
+  let xStep = graphWidth / maxIterations;
+
+  strokeWeight(2);
+
+  drawLineGraph(history.piedra, "gray", xStep, graphHeight);
+  drawLineGraph(history.papel, "yellow", xStep, graphHeight);
+  drawLineGraph(history.tijeras, "red", xStep, graphHeight);
+  drawLineGraph(history.lagarto, "green", xStep, graphHeight);
+  drawLineGraph(history.spock, "violet", xStep, graphHeight);
+}
+
+function drawLineGraph(data, col, xStep, graphHeight) {
+  stroke(col);
+  noFill();
+  beginShape();
+  for (let i = 0; i < data.length; i++) {
+    let x = 10 + i * xStep;
+    let y = height - 10 - map(data[i], 0, CuantosObjetos, 0, graphHeight);
+    vertex(x, y);
+  }
+  endShape();
 }
