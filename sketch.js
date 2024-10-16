@@ -1,12 +1,15 @@
 let objetos = [];
 let CuantosObjetos = 100;
-let contadorPiedra = 0;
-let contadorPapel = 0;
-let contadorTijeras = 0;
-let contadorLagarto = 0;
-let contadorSpock = 0;
 let terminado = false;
 const tamanio = 10;
+
+let counts = {
+  piedra: 0,
+  papel: 0,
+  tijeras: 0,
+  lagarto: 0,
+  spock: 0,
+};
 
 const reglas = {
   piedra: {
@@ -59,7 +62,6 @@ function setup() {
 
 function draw() {
   background("White");
-
   updateCountersAndCollisions();
   updateHistory();
   drawGraph();
@@ -140,12 +142,13 @@ function displayCounters() {
   textSize(16);
   let labels = ["🪨Piedra", "📜Papel", "✂️Tijeras", "🦎Lagarto", "👽Spock"];
   let values = [
-    contadorPiedra,
-    contadorPapel,
-    contadorTijeras,
-    contadorLagarto,
-    contadorSpock,
+    counts.piedra,
+    counts.papel,
+    counts.tijeras,
+    counts.lagarto,
+    counts.spock,
   ];
+
   let espaciado = width / (labels.length + 1);
 
   for (let i = 0; i < labels.length; i++) {
@@ -189,25 +192,17 @@ function updateObjects(quadtree) {
 }
 
 function updateCounters() {
-  contadorPiedra =
-    contadorPapel =
-    contadorTijeras =
-    contadorLagarto =
-    contadorSpock =
-      0;
+  //inicializamos los counts en 0
+  counts = {
+    piedra: 0,
+    papel: 0,
+    tijeras: 0,
+    lagarto: 0,
+    spock: 0,
+  };
 
-  for (let objeto of objetos) {
-    if (objeto.tipo === "piedra") {
-      contadorPiedra++;
-    } else if (objeto.tipo === "papel") {
-      contadorPapel++;
-    } else if (objeto.tipo === "tijeras") {
-      contadorTijeras++;
-    } else if (objeto.tipo === "lagarto") {
-      contadorLagarto++;
-    } else if (objeto.tipo === "spock") {
-      contadorSpock++;
-    }
+  for (let obj of objetos) {
+    counts[obj.tipo]++;
   }
 }
 
@@ -233,18 +228,6 @@ function mostrarContador(label, valor, x, y) {
 }
 
 function updateHistory() {
-  let counts = {
-    piedra: 0,
-    papel: 0,
-    tijeras: 0,
-    lagarto: 0,
-    spock: 0,
-  };
-
-  for (let obj of objetos) {
-    counts[obj.tipo]++;
-  }
-
   if (!terminado) {
     history.piedra.push(counts.piedra);
     history.papel.push(counts.papel);
@@ -262,11 +245,11 @@ function drawGraph() {
 
   strokeWeight(2);
 
-  drawLineGraph(history.piedra, "gray", xStep, graphHeight);
-  drawLineGraph(history.papel, "yellow", xStep, graphHeight);
-  drawLineGraph(history.tijeras, "red", xStep, graphHeight);
-  drawLineGraph(history.lagarto, "green", xStep, graphHeight);
-  drawLineGraph(history.spock, "violet", xStep, graphHeight);
+  drawLineGraph(history.piedra, color(128, 128, 128, 90), xStep, graphHeight); // gray with transparency
+  drawLineGraph(history.papel, color(255, 255, 0, 90), xStep, graphHeight); // yellow with transparency
+  drawLineGraph(history.tijeras, color(255, 0, 0, 90), xStep, graphHeight); // red with transparency
+  drawLineGraph(history.lagarto, color(0, 255, 0, 90), xStep, graphHeight); // green with transparency
+  drawLineGraph(history.spock, color(238, 130, 238, 90), xStep, graphHeight); // violet with transparency
 }
 
 function drawLineGraph(data, col, xStep, graphHeight) {
