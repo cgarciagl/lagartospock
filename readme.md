@@ -38,4 +38,8 @@ Las reglas del juego están definidas en el archivo [sketch.js](sketch.js) de la
 
 ## Créditos
 
-Este proyecto utiliza la biblioteca [p5.js](https://p5js.org/) para la visualización y animación, y [p5.sound](https://p5js.org/reference/#/libraries/p5.sound) para los efectos de sonido.
+Este proyecto utiliza la biblioteca [p5.js](https://p5js.org/) para la visualización y animación.
+
+It uses QuadTree from Daniel Shiffman (<a href="https://github.com/CodingTrain/QuadTree" target="_blank">available here</a>) for the optimization of collisions and P5js as redering engine
+
+Review it online <a href="https://cgarciagl.github.io/lagartospock/" target="_blank">here</a>
