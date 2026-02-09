@@ -29,47 +29,49 @@
             <button id="pause-btn">
                 <span id="pause-icon">⏸️</span> <span id="pause-text">Pausar</span>
             </button>
+            <button id="graph-btn" class="active">
+                <span>📈</span> Gráfico
+            </button>
         </div>
 
         <div id="canvas-container">
             <!-- p5.js canvas will be inserted here -->
-        </div>
-
-        <div class="stats-container">
-            <div class="dashboard">
-                <div class="stat-card" style="border-top: 3px solid var(--piedra)">
-                    <span class="stat-icon">💎</span>
-                    <span class="stat-label">Piedra</span>
-                    <span class="stat-value" id="count-piedra">0</span>
+            <div class="stats-container">
+                <div class="dashboard">
+                    <div class="stat-card" style="border-left: 3px solid var(--piedra)">
+                        <span class="stat-icon">💎</span>
+                        <span class="stat-label">Piedra</span>
+                        <span class="stat-value" id="count-piedra">0</span>
+                    </div>
+                    <div class="stat-card" style="border-left: 3px solid var(--papel)">
+                        <span class="stat-icon">📜</span>
+                        <span class="stat-label">Papel</span>
+                        <span class="stat-value" id="count-papel">0</span>
+                    </div>
+                    <div class="stat-card" style="border-left: 3px solid var(--tijeras)">
+                        <span class="stat-icon">✂️</span>
+                        <span class="stat-label">Tijeras</span>
+                        <span class="stat-value" id="count-tijeras">0</span>
+                    </div>
+                    <div class="stat-card" id="card-lagarto" style="border-left: 3px solid var(--lagarto)">
+                        <span class="stat-icon">🦎</span>
+                        <span class="stat-label">Lagarto</span>
+                        <span class="stat-value" id="count-lagarto">0</span>
+                    </div>
+                    <div class="stat-card" id="card-spock" style="border-left: 3px solid var(--spock)">
+                        <span class="stat-icon">👽</span>
+                        <span class="stat-label">Spock</span>
+                        <span class="stat-value" id="count-spock">0</span>
+                    </div>
                 </div>
-                <div class="stat-card" style="border-top: 3px solid var(--papel)">
-                    <span class="stat-icon">📜</span>
-                    <span class="stat-label">Papel</span>
-                    <span class="stat-value" id="count-papel">0</span>
+                
+                <div class="progress-container">
+                    <div id="bar-piedra" class="progress-bar piedra-bar" style="width: 20%"></div>
+                    <div id="bar-papel" class="progress-bar papel-bar" style="width: 20%"></div>
+                    <div id="bar-tijeras" class="progress-bar tijeras-bar" style="width: 20%"></div>
+                    <div id="bar-lagarto" class="progress-bar lagarto-bar" style="width: 20%"></div>
+                    <div id="bar-spock" class="progress-bar spock-bar" style="width: 20%"></div>
                 </div>
-                <div class="stat-card" style="border-top: 3px solid var(--tijeras)">
-                    <span class="stat-icon">✂️</span>
-                    <span class="stat-label">Tijeras</span>
-                    <span class="stat-value" id="count-tijeras">0</span>
-                </div>
-                <div class="stat-card" id="card-lagarto" style="border-top: 3px solid var(--lagarto)">
-                    <span class="stat-icon">🦎</span>
-                    <span class="stat-label">Lagarto</span>
-                    <span class="stat-value" id="count-lagarto">0</span>
-                </div>
-                <div class="stat-card" id="card-spock" style="border-top: 3px solid var(--spock)">
-                    <span class="stat-icon">👽</span>
-                    <span class="stat-label">Spock</span>
-                    <span class="stat-value" id="count-spock">0</span>
-                </div>
-            </div>
-            
-            <div class="progress-container">
-                <div id="bar-piedra" class="progress-bar piedra-bar" style="width: 20%"></div>
-                <div id="bar-papel" class="progress-bar papel-bar" style="width: 20%"></div>
-                <div id="bar-tijeras" class="progress-bar tijeras-bar" style="width: 20%"></div>
-                <div id="bar-lagarto" class="progress-bar lagarto-bar" style="width: 20%"></div>
-                <div id="bar-spock" class="progress-bar spock-bar" style="width: 20%"></div>
             </div>
         </div>
     </main>

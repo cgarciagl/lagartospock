@@ -4,6 +4,7 @@ let terminado = false;
 let pausado = false;
 let lastUIUpdate = 0;
 let gameMode = 'rpsls'; // 'rps' or 'rpsls'
+let showGraph = true;
 const tamanio = 24;
 
 const typesByMode = {
@@ -45,7 +46,7 @@ let history = { piedra: [], papel: [], tijeras: [], lagarto: [], spock: [] };
 function setup() {
   const container = document.getElementById('canvas-container');
   const w = Math.min(windowWidth - 20, 1200);
-  const h = Math.min(windowHeight * 0.7, 800);
+  const h = Math.min(windowHeight - 200, 800);
   const canvas = createCanvas(w, h);
   canvas.parent('canvas-container');
   
@@ -60,6 +61,14 @@ function setup() {
   // Setup buttons and selectors
   document.getElementById('reset-btn').addEventListener('click', resetSimulation);
   document.getElementById('pause-btn').addEventListener('click', togglePause);
+  
+  const graphBtn = document.getElementById('graph-btn');
+  if (graphBtn) {
+    graphBtn.addEventListener('click', () => {
+      showGraph = !showGraph;
+      graphBtn.classList.toggle('active', showGraph);
+    });
+  }
   
   const modeSelect = document.getElementById('game-mode');
   modeSelect.addEventListener('change', (e) => {
@@ -113,7 +122,7 @@ function togglePause() {
 
 function windowResized() {
   const w = Math.min(windowWidth - 20, 1200);
-  const h = Math.min(windowHeight * 0.7, 800);
+  const h = Math.min(windowHeight - 200, 800);
   resizeCanvas(w, h);
 }
 
@@ -290,35 +299,56 @@ function updateHistory() {
 }
 
 function drawGraph() {
-  const graphHeight = 100;
-  const xStep = width / history.piedra.length;
-
-  noFill();
-  strokeWeight(2);
+  if (!showGraph) return;
   
-  // Draw backdrop for graph
-  fill(0, 0, 0, 50);
-  noStroke();
-  rect(0, height - graphHeight - 10, width, graphHeight + 10);
+  const graphHeight = 120; // Increased height for better visibility behind glass
+  const xStep = width / (history.piedra.length - 1);
 
-  drawLineGraph(history.piedra, colors.piedra, xStep, graphHeight);
-  drawLineGraph(history.papel, colors.papel, xStep, graphHeight);
-  drawLineGraph(history.tijeras, colors.tijeras, xStep, graphHeight);
+  noStroke();
+  
+  // Draw backdrop for graph (very subtle)
+  fill(15, 23, 42, 100);
+  rect(0, height - graphHeight - 20, width, graphHeight + 20);
+
+  // Draw each type as a smooth area
+  drawAreaGraph(history.piedra, colors.piedra, xStep, graphHeight);
+  drawAreaGraph(history.papel, colors.papel, xStep, graphHeight);
+  drawAreaGraph(history.tijeras, colors.tijeras, xStep, graphHeight);
   
   if (gameMode === 'rpsls') {
-    drawLineGraph(history.lagarto, colors.lagarto, xStep, graphHeight);
-    drawLineGraph(history.spock, colors.spock, xStep, graphHeight);
+    drawAreaGraph(history.lagarto, colors.lagarto, xStep, graphHeight);
+    drawAreaGraph(history.spock, colors.spock, xStep, graphHeight);
   }
 }
 
-function drawLineGraph(data, col, xStep, graphHeight) {
+function drawAreaGraph(data, col, xStep, graphHeight) {
+  if (data.length < 2) return;
+
+  // Fill area
+  fill(col + '22'); // Very transparent
+  noStroke();
+  beginShape();
+  vertex(0, height);
+  for (let i = 0; i < data.length; i++) {
+    let x = i * xStep;
+    let y = height - map(data[i], 0, CuantosObjetos, 0, graphHeight);
+    curveVertex(x, y);
+    // Duplicate first and last for curveVertex behavior
+    if (i === 0 || i === data.length - 1) curveVertex(x, y);
+  }
+  vertex(width, height);
+  endShape(CLOSE);
+
+  // Stroke line
   stroke(col);
+  strokeWeight(2);
   noFill();
   beginShape();
   for (let i = 0; i < data.length; i++) {
     let x = i * xStep;
-    let y = height - 5 - map(data[i], 0, CuantosObjetos, 0, graphHeight);
-    vertex(x, y);
+    let y = height - map(data[i], 0, CuantosObjetos, 0, graphHeight);
+    curveVertex(x, y);
+    if (i === 0 || i === data.length - 1) curveVertex(x, y);
   }
   endShape();
 }
