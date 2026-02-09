@@ -33,7 +33,7 @@ const reglas = {
 };
 
 const colors = {
-  piedra: '#94a3b8',
+  piedra: '#00d4ff',
   papel: '#fde047',
   tijeras: '#ef4444',
   lagarto: '#22c55e',
@@ -157,7 +157,7 @@ class Objeto {
     textSize(this.tamaño);
     textAlign(CENTER, CENTER);
     const simbolos = {
-      piedra: "🪨",
+      piedra: "💎",
       papel: "📜",
       tijeras: "✂️",
       lagarto: "🦎",
