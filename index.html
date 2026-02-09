@@ -1,15 +1,83 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RPSLS Evolution | Simulation</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.10.0/p5.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/CodingTrain/QuadTree/quadtree.min.js"></script>
     <link rel="stylesheet" type="text/css" href="style.css" />
-    <meta charset="utf-8" />
-  </head>
-  <body>
-    <div id="contenedor">
-      <main></main>
-    </div>
+</head>
+<body>
+    <header>
+        <h1>RPSLS <span style="font-weight: 300;">Evolution</span></h1>
+        <p class="subtitle">Simulación de supervivencia: Piedra, Papel, Tijeras, Lagarto, Spock</p>
+    </header>
+
+    <main>
+        <div class="controls">
+            <div class="mode-selector">
+                <label for="game-mode">Modo:</label>
+                <select id="game-mode">
+                    <option value="rpsls" selected>RPSLS (Extendido)</option>
+                    <option value="rps">RPS (Clásico)</option>
+                </select>
+            </div>
+            <button id="reset-btn" class="primary">
+                <span>🔄</span> Reiniciar
+            </button>
+            <button id="pause-btn">
+                <span id="pause-icon">⏸️</span> <span id="pause-text">Pausar</span>
+            </button>
+        </div>
+
+        <div id="canvas-container">
+            <!-- p5.js canvas will be inserted here -->
+        </div>
+
+        <div class="stats-container">
+            <div class="dashboard">
+                <div class="stat-card" style="border-top: 3px solid var(--piedra)">
+                    <span class="stat-icon">🪨</span>
+                    <span class="stat-label">Piedra</span>
+                    <span class="stat-value" id="count-piedra">0</span>
+                </div>
+                <div class="stat-card" style="border-top: 3px solid var(--papel)">
+                    <span class="stat-icon">📜</span>
+                    <span class="stat-label">Papel</span>
+                    <span class="stat-value" id="count-papel">0</span>
+                </div>
+                <div class="stat-card" style="border-top: 3px solid var(--tijeras)">
+                    <span class="stat-icon">✂️</span>
+                    <span class="stat-label">Tijeras</span>
+                    <span class="stat-value" id="count-tijeras">0</span>
+                </div>
+                <div class="stat-card" id="card-lagarto" style="border-top: 3px solid var(--lagarto)">
+                    <span class="stat-icon">🦎</span>
+                    <span class="stat-label">Lagarto</span>
+                    <span class="stat-value" id="count-lagarto">0</span>
+                </div>
+                <div class="stat-card" id="card-spock" style="border-top: 3px solid var(--spock)">
+                    <span class="stat-icon">👽</span>
+                    <span class="stat-label">Spock</span>
+                    <span class="stat-value" id="count-spock">0</span>
+                </div>
+            </div>
+            
+            <div class="progress-container">
+                <div id="bar-piedra" class="progress-bar piedra-bar" style="width: 20%"></div>
+                <div id="bar-papel" class="progress-bar papel-bar" style="width: 20%"></div>
+                <div id="bar-tijeras" class="progress-bar tijeras-bar" style="width: 20%"></div>
+                <div id="bar-lagarto" class="progress-bar lagarto-bar" style="width: 20%"></div>
+                <div id="bar-spock" class="progress-bar spock-bar" style="width: 20%"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>Inspirado en The Big Bang Theory & Coding Train</p>
+    </footer>
+
     <script src="sketch.js"></script>
-  </body>
+</body>
 </html>
