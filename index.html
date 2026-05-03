@@ -3,9 +3,16 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Simulación visual e interactiva de Piedra, Papel, Tijeras, Lagarto, Spock.">
     <title>RPSLS Evolution | Simulation</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.10.0/p5.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/CodingTrain/QuadTree/quadtree.min.js"></script>
+    
+    <!-- Optimización de red: Preconnect para recursos CDN -->
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+    
+    <!-- Optimización de renderizado: Scripts diferidos (defer) para no bloquear el HTML -->
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.10.0/p5.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/gh/CodingTrain/QuadTree/quadtree.min.js"></script>
     <link rel="stylesheet" type="text/css" href="style.css" />
 </head>
 <body>
@@ -39,27 +46,27 @@
             <div class="stats-container">
                 <div class="dashboard">
                     <div class="stat-card" style="border-left: 3px solid var(--piedra)">
-                        <span class="stat-icon">💎</span>
+                        <span class="stat-icon" id="icon-piedra"></span>
                         <span class="stat-label">Piedra</span>
                         <span class="stat-value" id="count-piedra">0</span>
                     </div>
                     <div class="stat-card" style="border-left: 3px solid var(--papel)">
-                        <span class="stat-icon">📜</span>
+                        <span class="stat-icon" id="icon-papel"></span>
                         <span class="stat-label">Papel</span>
                         <span class="stat-value" id="count-papel">0</span>
                     </div>
                     <div class="stat-card" style="border-left: 3px solid var(--tijeras)">
-                        <span class="stat-icon">✂️</span>
+                        <span class="stat-icon" id="icon-tijeras"></span>
                         <span class="stat-label">Tijeras</span>
                         <span class="stat-value" id="count-tijeras">0</span>
                     </div>
                     <div class="stat-card" id="card-lagarto" style="border-left: 3px solid var(--lagarto)">
-                        <span class="stat-icon">🦎</span>
+                        <span class="stat-icon" id="icon-lagarto"></span>
                         <span class="stat-label">Lagarto</span>
                         <span class="stat-value" id="count-lagarto">0</span>
                     </div>
                     <div class="stat-card" id="card-spock" style="border-left: 3px solid var(--spock)">
-                        <span class="stat-icon">👽</span>
+                        <span class="stat-icon" id="icon-spock"></span>
                         <span class="stat-label">Spock</span>
                         <span class="stat-value" id="count-spock">0</span>
                     </div>
