@@ -134,7 +134,9 @@ function initSimulation() {
   const availableTypes = TYPES_BY_MODE[gameState.gameMode];
   
   for (let i = 0; i < INITIAL_OBJECT_COUNT; i++) {
-    gameState.objects.push(new Entity(random(availableTypes)));
+    const entity = new Entity(random(availableTypes));
+    entity.id = i;
+    gameState.objects.push(entity);
   }
 }
 
@@ -160,7 +162,10 @@ function draw() {
   if (!gameState.isPaused) {
     updatePhysicsAndCollisions();
     updateCounters();
-    updateHistory();
+    // Throttle history updates to every 4 frames (approx. 66ms) for extreme performance gains
+    if (frameCount % 4 === 0) {
+      updateHistory();
+    }
   }
   
   renderObjects();
@@ -192,7 +197,8 @@ function updatePhysicsAndCollisions() {
 
     for (const point of points) {
       const obj2 = point.userData;
-      if (obj1 !== obj2 && obj1.checkCollision(obj2)) {
+      // Optimización: Solo resolver si obj1.id < obj2.id (evita redundancia y doble swap de velocidad)
+      if (obj1.id < obj2.id && obj1.checkCollision(obj2)) {
         obj1.resolveCombat(obj2);
         obj1.bounceWith(obj2);
       }
@@ -239,10 +245,11 @@ function updateHistory() {
     gameState.history.lagarto.push(gameState.counts.lagarto);
     gameState.history.spock.push(gameState.counts.spock);
     
-    // Limit history length to width
-    if (gameState.history.piedra.length > width) {
+    // Limit history length to width / 4 for high-performance shifting and rendering
+    const maxHistoryLength = Math.ceil(width / 4);
+    if (gameState.history.piedra.length > maxHistoryLength) {
        for (const key in gameState.history) {
-         gameState.history[key].shift();
+          gameState.history[key].shift();
        }
     }
   }
@@ -272,36 +279,42 @@ function drawGraph() {
 }
 
 function drawAreaGraph(data, col, xStep, graphHeight) {
-  if (data.length < 2) return;
+  const len = data.length;
+  if (len < 2) return;
 
+  const scaleFactor = graphHeight / INITIAL_OBJECT_COUNT;
+
+  // Pre-calculate y coordinates to avoid redundant linear scaling and function calls
+  const yCoords = new Float32Array(len);
+  for (let i = 0; i < len; i++) {
+    yCoords[i] = height - data[i] * scaleFactor;
+  }
+
+  // Draw fill shape using fast linear vertex
   fill(col + '22'); 
   noStroke();
   beginShape();
   vertex(0, height);
-  for (let i = 0; i < data.length; i++) {
-    const x = i * xStep;
-    const y = height - map(data[i], 0, INITIAL_OBJECT_COUNT, 0, graphHeight);
-    curveVertex(x, y);
-    if (i === 0 || i === data.length - 1) curveVertex(x, y);
+  for (let i = 0; i < len; i++) {
+    vertex(i * xStep, yCoords[i]);
   }
-  vertex(width, height);
+  vertex((len - 1) * xStep, height);
   endShape(CLOSE);
 
+  // Draw line stroke using fast linear vertex
   stroke(col);
   strokeWeight(2);
   noFill();
   beginShape();
-  for (let i = 0; i < data.length; i++) {
-    const x = i * xStep;
-    const y = height - map(data[i], 0, INITIAL_OBJECT_COUNT, 0, graphHeight);
-    curveVertex(x, y);
-    if (i === 0 || i === data.length - 1) curveVertex(x, y);
+  for (let i = 0; i < len; i++) {
+    vertex(i * xStep, yCoords[i]);
   }
   endShape();
 }
 
 class Entity {
   constructor(type) {
+    this.id = -1; // Se asignará un ID único al inicializar
     this.size = DEFAULT_OBJECT_SIZE;
     this.x = random(this.size, width - this.size);
     this.y = random(this.size, height - this.size);
@@ -339,7 +352,10 @@ class Entity {
   }
 
   checkCollision(otherEntity) {
-    return dist(this.x, this.y, otherEntity.x, otherEntity.y) < this.size * COLLISION_TOLERANCE;
+    const dx = this.x - otherEntity.x;
+    const dy = this.y - otherEntity.y;
+    const threshold = this.size * COLLISION_TOLERANCE;
+    return (dx * dx + dy * dy) < (threshold * threshold);
   }
 
   bounceWith(otherEntity) {
@@ -348,11 +364,18 @@ class Entity {
     [this.velY, otherEntity.velY] = [otherEntity.velY, this.velY];
 
     // Separate objects to avoid getting stuck
-    const overlap = this.size * COLLISION_TOLERANCE - dist(this.x, this.y, otherEntity.x, otherEntity.y);
-    if (overlap > 0) {
-      const angle = atan2(this.y - otherEntity.y, this.x - otherEntity.x);
-      const moveX = (cos(angle) * overlap) / 2;
-      const moveY = (sin(angle) * overlap) / 2;
+    const dx = this.x - otherEntity.x;
+    const dy = this.y - otherEntity.y;
+    const distSq = dx * dx + dy * dy;
+    const threshold = this.size * COLLISION_TOLERANCE;
+
+    if (distSq < threshold * threshold && distSq > 0) {
+      const distance = Math.sqrt(distSq);
+      const overlap = threshold - distance;
+      
+      // Vector arithmetic: avoids expensive Math.atan2, Math.cos, Math.sin!
+      const moveX = (dx / distance * overlap) / 2;
+      const moveY = (dy / distance * overlap) / 2;
 
       this.x += moveX;
       this.y += moveY;
