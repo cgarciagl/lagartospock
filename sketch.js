@@ -46,31 +46,54 @@ const EMOJIS = {
 class SoundController {
   constructor() {
     this.ctx = null;
+    this.masterGain = null;
+    this.compressor = null;
     this.isMuted = false;
     this.isUnlocked = false;
+    this.lastHitTime = 0;
   }
 
-  unlock() {
+  init() {
     if (!this.ctx) {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
       if (AudioCtx) {
         this.ctx = new AudioCtx();
+
+        // Dynamics compressor prevents clipping and OS audio dropping on rapid multi-hits
+        this.compressor = this.ctx.createDynamicsCompressor();
+        this.compressor.threshold.setValueAtTime(-16, this.ctx.currentTime);
+        this.compressor.knee.setValueAtTime(30, this.ctx.currentTime);
+        this.compressor.ratio.setValueAtTime(10, this.ctx.currentTime);
+        this.compressor.attack.setValueAtTime(0.003, this.ctx.currentTime);
+        this.compressor.release.setValueAtTime(0.2, this.ctx.currentTime);
+
+        this.masterGain = this.ctx.createGain();
+        this.masterGain.gain.setValueAtTime(0.85, this.ctx.currentTime);
+
+        this.compressor.connect(this.masterGain);
+        this.masterGain.connect(this.ctx.destination);
       }
     }
-    if (this.ctx && this.ctx.state === 'suspended') {
-      this.ctx.resume();
-    }
-    if (this.ctx && !this.isUnlocked) {
-      // iOS Web Audio unlock: create and play a 1-sample silent buffer
-      try {
-        const buffer = this.ctx.createBuffer(1, 1, 22050);
-        const source = this.ctx.createBufferSource();
-        source.buffer = buffer;
-        source.connect(this.ctx.destination);
-        source.start(0);
-        this.isUnlocked = true;
-      } catch (e) {
-        // Ignore if already playing/unlocked
+  }
+
+  unlock() {
+    this.init();
+    if (this.ctx) {
+      if (this.ctx.state === 'suspended' || this.ctx.state === 'interrupted') {
+        this.ctx.resume().catch(() => {});
+      }
+      if (!this.isUnlocked) {
+        // iOS Web Audio unlock: create and play a 1-sample silent buffer
+        try {
+          const buffer = this.ctx.createBuffer(1, 1, 22050);
+          const source = this.ctx.createBufferSource();
+          source.buffer = buffer;
+          source.connect(this.compressor || this.ctx.destination);
+          source.start(0);
+          this.isUnlocked = true;
+        } catch (e) {
+          // Ignore if already unlocked
+        }
       }
     }
   }
@@ -96,7 +119,7 @@ class SoundController {
     gain.gain.setValueAtTime(0.2, now);
     gain.gain.exponentialRampToValueAtTime(0.005, now + 0.08);
     osc.connect(gain);
-    gain.connect(this.ctx.destination);
+    gain.connect(this.compressor || this.ctx.destination);
     osc.start(now);
     osc.stop(now + 0.08);
   }
@@ -104,13 +127,18 @@ class SoundController {
   playHit(winnerType) {
     if (this.isMuted) return;
     this.unlock();
-    if (!this.ctx || this.ctx.state !== 'running') return;
+    if (!this.ctx) return;
+
+    // Rate limiter: avoids audio channel overload if multiple combats happen in the same 35ms
+    const nowMs = performance.now();
+    if (nowMs - this.lastHitTime < 35) return;
+    this.lastHitTime = nowMs;
 
     const now = this.ctx.currentTime;
     const osc = this.ctx.createOscillator();
     const gain = this.ctx.createGain();
     osc.connect(gain);
-    gain.connect(this.ctx.destination);
+    gain.connect(this.compressor || this.ctx.destination);
 
     switch (winnerType) {
       case 'piedra': // Golpe grave con armónicos audibles en móviles (260Hz -> 80Hz)
@@ -169,7 +197,7 @@ class SoundController {
   playVictory() {
     if (this.isMuted) return;
     this.unlock();
-    if (!this.ctx || this.ctx.state !== 'running') return;
+    if (!this.ctx) return;
 
     const now = this.ctx.currentTime;
     const notes = [329.63, 392.00, 523.25, 659.25, 783.99]; // Acorde mayor E4 - G4 - C5 - E5 - G5
@@ -179,7 +207,7 @@ class SoundController {
       osc.type = 'triangle';
       osc.frequency.value = freq;
       osc.connect(gain);
-      gain.connect(this.ctx.destination);
+      gain.connect(this.compressor || this.ctx.destination);
 
       const noteStart = now + index * 0.09;
       gain.gain.setValueAtTime(0.28, noteStart);
