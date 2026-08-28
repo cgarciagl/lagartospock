@@ -39,6 +39,12 @@
             <button id="graph-btn" class="active">
                 <span>📈</span> Gráfico
             </button>
+            <button id="ai-btn" class="active" title="Activar/Desactivar comportamiento inteligente de caza y huida">
+                <span>🧠</span> <span id="ai-text">IA: Caza</span>
+            </button>
+            <button id="sound-btn" class="active" title="Activar/Desactivar efectos de sonido sintetizados">
+                <span id="sound-icon">🔊</span> <span id="sound-text">Sonido</span>
+            </button>
         </div>
 
         <div id="canvas-container">
@@ -82,6 +88,51 @@
             </div>
         </div>
     </main>
+
+    <!-- Modal de Victoria y Analíticas -->
+    <div id="victory-modal" class="modal-overlay hidden">
+        <div class="modal-card">
+            <button id="close-modal-btn" class="modal-close-btn" aria-label="Cerrar">✕</button>
+            <div class="modal-header">
+                <div class="trophy-icon">🏆</div>
+                <h2>¡DOMINIO TOTAL!</h2>
+                <p class="modal-subtitle">Una facción ha conquistado la simulación</p>
+            </div>
+            
+            <div class="winner-badge" id="winner-badge">
+                <span class="winner-icon" id="winner-icon">🪨</span>
+                <span class="winner-name" id="winner-name">PIEDRA</span>
+            </div>
+
+            <div class="victory-stats">
+                <div class="v-stat-card">
+                    <span class="v-stat-title">⏱️ Duración</span>
+                    <span class="v-stat-val" id="stat-duration">00:00</span>
+                </div>
+                <div class="v-stat-card">
+                    <span class="v-stat-title">⚔️ Combates</span>
+                    <span class="v-stat-val" id="stat-combats">0</span>
+                </div>
+                <div class="v-stat-card">
+                    <span class="v-stat-title">👑 MVP</span>
+                    <span class="v-stat-val" id="stat-mvp">-</span>
+                </div>
+                <div class="v-stat-card">
+                    <span class="v-stat-title">💥 Récord MVP</span>
+                    <span class="v-stat-val" id="stat-mvp-kills">0 kills</span>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button id="modal-reset-btn" class="primary">
+                    <span>🔄</span> Nueva Partida
+                </button>
+                <button id="modal-screenshot-btn">
+                    <span>📸</span> Guardar Captura
+                </button>
+            </div>
+        </div>
+    </div>
 
     <footer>
         <p>Inspirado en The Big Bang Theory & Coding Train</p>
