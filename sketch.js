@@ -307,13 +307,22 @@ function setup() {
   initSimulation();
 }
 
+function getEntitySize() {
+  if (width <= 480) return 17;
+  if (width <= 768) return 21;
+  return DEFAULT_OBJECT_SIZE; // 28px en desktop intacto
+}
+
 function getCanvasDimensions() {
   const container = document.getElementById('canvas-container');
   const availableWidth = container && container.clientWidth > 100 ? (container.clientWidth - 16) : (windowWidth - CANVAS_MARGIN_X);
-  const targetW = Math.max(320, Math.min(availableWidth, CANVAS_MAX_WIDTH));
+  const targetW = Math.max(300, Math.min(availableWidth, CANVAS_MAX_WIDTH));
   
-  const availableHeight = windowHeight - CANVAS_MARGIN_Y;
-  const targetH = Math.max(420, Math.min(availableHeight, CANVAS_MAX_HEIGHT));
+  const isMobile = windowWidth <= 768;
+  const marginY = isMobile ? 310 : CANVAS_MARGIN_Y;
+  const availableHeight = windowHeight - marginY;
+  const minH = isMobile ? 320 : 420;
+  const targetH = Math.max(minH, Math.min(availableHeight, CANVAS_MAX_HEIGHT));
   
   return { w: targetW, h: targetH };
 }
@@ -465,6 +474,10 @@ function togglePause() {
 function windowResized() {
   const dims = getCanvasDimensions();
   resizeCanvas(dims.w, dims.h);
+  const currentSize = getEntitySize();
+  for (const obj of gameState.objects) {
+    obj.size = currentSize;
+  }
 }
 
 function touchStarted() {
@@ -732,7 +745,7 @@ function drawAreaGraph(data, col, xStep, graphHeight) {
 class Entity {
   constructor(type) {
     this.id = -1;
-    this.size = DEFAULT_OBJECT_SIZE;
+    this.size = getEntitySize();
     this.x = random(this.size, width - this.size);
     this.y = random(this.size, height - this.size);
     this.conversions = 0;
