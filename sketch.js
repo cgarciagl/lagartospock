@@ -191,36 +191,68 @@ class SoundController {
 }
 
 // ============================================================================
-// Particle System for Combat Feedback
+// Particle System for Combat Feedback (Vibrant Sparks & Expanding Shockwaves)
 // ============================================================================
 class Particle {
   constructor(x, y, colorHex) {
     this.x = x;
     this.y = y;
     const angle = random(TWO_PI);
-    const speed = random(1.2, 3.5);
+    const speed = random(1.8, 5.2);
     this.vx = cos(angle) * speed;
     this.vy = sin(angle) * speed;
     this.colorHex = colorHex;
-    this.alpha = 240;
-    this.size = random(2.5, 5.0);
-    this.decay = random(14, 22);
+    this.alpha = 255;
+    this.size = random(4.0, 8.5);
+    this.decay = random(6.5, 12.0);
   }
 
   update() {
     this.x += this.vx;
     this.y += this.vy;
-    this.vx *= 0.94;
-    this.vy *= 0.94;
+    this.vx *= 0.93;
+    this.vy *= 0.93;
     this.alpha -= this.decay;
-    this.size = Math.max(1, this.size * 0.95);
+    this.size = Math.max(1.2, this.size * 0.95);
   }
 
   draw() {
     noStroke();
     const c = color(this.colorHex);
+    // Outer glow halo
+    fill(red(c), green(c), blue(c), this.alpha * 0.35);
+    circle(this.x, this.y, this.size * 2.2);
+
+    // Inner bright core
     fill(red(c), green(c), blue(c), this.alpha);
     circle(this.x, this.y, this.size);
+  }
+
+  get isDead() {
+    return this.alpha <= 0;
+  }
+}
+
+class Shockwave {
+  constructor(x, y, colorHex) {
+    this.x = x;
+    this.y = y;
+    this.colorHex = colorHex;
+    this.radius = 6;
+    this.alpha = 240;
+  }
+
+  update() {
+    this.radius += 2.4;
+    this.alpha -= 14;
+  }
+
+  draw() {
+    noFill();
+    const c = color(this.colorHex);
+    stroke(red(c), green(c), blue(c), this.alpha);
+    strokeWeight(2.5);
+    circle(this.x, this.y, this.radius * 2);
   }
 
   get isDead() {
@@ -440,7 +472,11 @@ function mousePressed() {
 }
 
 function spawnCombatParticles(x, y, colorHex) {
-  const count = 7;
+  // Spawn expanding neon shockwave ring
+  gameState.particles.push(new Shockwave(x, y, colorHex));
+
+  // Spawn 14 vibrant glowing sparks
+  const count = 14;
   for (let i = 0; i < count; i++) {
     gameState.particles.push(new Particle(x, y, colorHex));
   }
