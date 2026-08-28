@@ -697,8 +697,8 @@ class Entity {
     this.y = random(this.size, height - this.size);
     this.conversions = 0;
     
-    // Distribute initial velocity in a circle
-    const baseSpeed = random(1.2, 2.2);
+    // Distribute initial velocity at full cruising speed immediately from frame 0
+    const baseSpeed = 2.4;
     const angle = random(TWO_PI);
     this.velX = cos(angle) * baseSpeed;
     this.velY = sin(angle) * baseSpeed;
