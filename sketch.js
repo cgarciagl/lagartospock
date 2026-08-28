@@ -96,6 +96,10 @@ class SoundController {
         }
       }
     }
+    const promptEl = document.getElementById('audio-prompt');
+    if (promptEl) {
+      promptEl.classList.add('hidden');
+    }
   }
 
   toggleMute() {
@@ -376,7 +380,16 @@ function setupEventListeners() {
   const unlockEvents = ['touchstart', 'touchend', 'pointerdown', 'mousedown', 'keydown', 'click'];
   unlockEvents.forEach(evt => {
     window.addEventListener(evt, () => soundController.unlock(), { passive: true });
+    document.addEventListener(evt, () => soundController.unlock(), { passive: true });
   });
+
+  const audioPrompt = document.getElementById('audio-prompt');
+  if (audioPrompt) {
+    audioPrompt.addEventListener('click', () => {
+      soundController.unlock();
+      soundController.playFeedbackTone();
+    });
+  }
 
   document.getElementById('reset-btn').addEventListener('click', () => {
     soundController.unlock();

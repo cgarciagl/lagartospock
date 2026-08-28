@@ -276,6 +276,43 @@ button.active {
   animation-delay: 0.2s;
 }
 
+.audio-prompt {
+  position: absolute;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(10, 15, 30, 0.85);
+  border: 1px solid rgba(0, 242, 254, 0.45);
+  color: var(--text-main);
+  padding: 0.45rem 1.1rem;
+  border-radius: var(--radius-xl);
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  backdrop-filter: var(--blur-amount);
+  -webkit-backdrop-filter: var(--blur-amount);
+  box-shadow: 0 4px 20px rgba(0, 242, 254, 0.25);
+  cursor: pointer;
+  z-index: 90;
+  animation: pulseAudioPrompt 2s infinite alternate ease-in-out;
+  transition: opacity 0.35s ease, transform 0.35s ease, visibility 0.35s ease;
+  user-select: none;
+}
+
+.audio-prompt.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateX(-50%) translateY(-10px);
+}
+
+@keyframes pulseAudioPrompt {
+  from { transform: translateX(-50%) scale(0.97); box-shadow: 0 4px 15px rgba(0, 242, 254, 0.2); }
+  to { transform: translateX(-50%) scale(1.03); box-shadow: 0 4px 25px rgba(0, 242, 254, 0.5); border-color: var(--accent-main); }
+}
+
 @keyframes fadeInScale {
   from { opacity: 0; transform: scale(0.96); }
   to { opacity: 1; transform: scale(1); }
