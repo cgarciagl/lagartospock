@@ -470,6 +470,7 @@ function draw() {
 }
 
 function renderParticles() {
+  push();
   for (let i = gameState.particles.length - 1; i >= 0; i--) {
     const p = gameState.particles[i];
     if (!gameState.isPaused) {
@@ -480,6 +481,7 @@ function renderParticles() {
       gameState.particles.splice(i, 1);
     }
   }
+  pop();
 }
 
 function updatePhysicsAndCollisions() {
@@ -516,9 +518,13 @@ function updatePhysicsAndCollisions() {
 }
 
 function renderObjects() {
+  push();
+  fill(255);
+  noStroke();
   for (const obj of gameState.objects) {
     obj.show();
   }
+  pop();
 }
 
 function updateCounters() {
@@ -624,6 +630,7 @@ function updateHistory() {
 function drawGraph() {
   if (!gameState.showGraph) return;
   
+  push();
   const graphHeight = 120;
   const xStep = width / (gameState.history.piedra.length - 1);
 
@@ -642,6 +649,7 @@ function drawGraph() {
     drawAreaGraph(gameState.history.lagarto, COLORS.lagarto, xStep, graphHeight);
     drawAreaGraph(gameState.history.spock, COLORS.spock, xStep, graphHeight);
   }
+  pop();
 }
 
 function drawAreaGraph(data, col, xStep, graphHeight) {
@@ -760,6 +768,9 @@ class Entity {
   }
 
   show() {
+    fill(255);
+    noStroke();
+
     // Render MVP Crown if leading with at least 3 conversions
     if (this === gameState.mvpEntity && this.conversions >= 3) {
       textSize(this.size * 0.7);
