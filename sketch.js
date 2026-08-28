@@ -5,7 +5,7 @@ const CANVAS_MARGIN_X = 20;
 const CANVAS_MARGIN_Y = 200;
 const COLLISION_TOLERANCE = 0.8;
 const UI_THROTTLE_MS = 100;
-const DEFAULT_OBJECT_SIZE = 24;
+const DEFAULT_OBJECT_SIZE = 28;
 const INITIAL_OBJECT_COUNT = 100;
 const NORMAL_SPEED_MULTIPLIER = 3.2;
 const FINISHED_SPEED_MULTIPLIER = 1.0;
@@ -198,13 +198,13 @@ class Particle {
     this.x = x;
     this.y = y;
     const angle = random(TWO_PI);
-    const speed = random(1.5, 4.0);
+    const speed = random(1.2, 3.5);
     this.vx = cos(angle) * speed;
     this.vy = sin(angle) * speed;
     this.colorHex = colorHex;
-    this.alpha = 255;
-    this.size = random(3, 7);
-    this.decay = random(8, 14);
+    this.alpha = 240;
+    this.size = random(2.5, 5.0);
+    this.decay = random(14, 22);
   }
 
   update() {
@@ -458,9 +458,9 @@ function draw() {
     }
   }
   
+  drawGraph();
   renderParticles();
   renderObjects();
-  drawGraph();
   
   // Throttle UI updates
   if (millis() - gameState.lastUIUpdate > UI_THROTTLE_MS) {
