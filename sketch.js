@@ -1,8 +1,8 @@
 // Constants (Magic Numbers and Data)
-const CANVAS_MAX_WIDTH = 1200;
-const CANVAS_MAX_HEIGHT = 800;
-const CANVAS_MARGIN_X = 20;
-const CANVAS_MARGIN_Y = 200;
+const CANVAS_MAX_WIDTH = 3840;
+const CANVAS_MAX_HEIGHT = 1600;
+const CANVAS_MARGIN_X = 32;
+const CANVAS_MARGIN_Y = 220;
 const COLLISION_TOLERANCE = 0.8;
 const UI_THROTTLE_MS = 100;
 const DEFAULT_OBJECT_SIZE = 28;
@@ -308,10 +308,14 @@ function setup() {
 }
 
 function getCanvasDimensions() {
-  return {
-    w: Math.min(windowWidth - CANVAS_MARGIN_X, CANVAS_MAX_WIDTH),
-    h: Math.min(windowHeight - CANVAS_MARGIN_Y, CANVAS_MAX_HEIGHT)
-  };
+  const container = document.getElementById('canvas-container');
+  const availableWidth = container && container.clientWidth > 100 ? (container.clientWidth - 16) : (windowWidth - CANVAS_MARGIN_X);
+  const targetW = Math.max(320, Math.min(availableWidth, CANVAS_MAX_WIDTH));
+  
+  const availableHeight = windowHeight - CANVAS_MARGIN_Y;
+  const targetH = Math.max(420, Math.min(availableHeight, CANVAS_MAX_HEIGHT));
+  
+  return { w: targetW, h: targetH };
 }
 
 function cacheDomElements() {
