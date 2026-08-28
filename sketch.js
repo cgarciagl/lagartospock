@@ -41,15 +41,16 @@ const EMOJIS = {
 };
 
 // ============================================================================
-// Web Audio API Procedural Sound Controller
+// Web Audio API Procedural Sound Controller (Optimized for Mobile & Desktop)
 // ============================================================================
 class SoundController {
   constructor() {
     this.ctx = null;
     this.isMuted = false;
+    this.isUnlocked = false;
   }
 
-  init() {
+  unlock() {
     if (!this.ctx) {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
       if (AudioCtx) {
@@ -59,17 +60,51 @@ class SoundController {
     if (this.ctx && this.ctx.state === 'suspended') {
       this.ctx.resume();
     }
+    if (this.ctx && !this.isUnlocked) {
+      // iOS Web Audio unlock: create and play a 1-sample silent buffer
+      try {
+        const buffer = this.ctx.createBuffer(1, 1, 22050);
+        const source = this.ctx.createBufferSource();
+        source.buffer = buffer;
+        source.connect(this.ctx.destination);
+        source.start(0);
+        this.isUnlocked = true;
+      } catch (e) {
+        // Ignore if already playing/unlocked
+      }
+    }
   }
 
   toggleMute() {
     this.isMuted = !this.isMuted;
+    if (!this.isMuted) {
+      this.unlock();
+    }
     return this.isMuted;
+  }
+
+  playFeedbackTone() {
+    if (this.isMuted) return;
+    this.unlock();
+    if (!this.ctx) return;
+
+    const now = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(587.33, now); // Re (D5)
+    gain.gain.setValueAtTime(0.2, now);
+    gain.gain.exponentialRampToValueAtTime(0.005, now + 0.08);
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    osc.start(now);
+    osc.stop(now + 0.08);
   }
 
   playHit(winnerType) {
     if (this.isMuted) return;
-    this.init();
-    if (!this.ctx) return;
+    this.unlock();
+    if (!this.ctx || this.ctx.state !== 'running') return;
 
     const now = this.ctx.currentTime;
     const osc = this.ctx.createOscillator();
@@ -78,52 +113,52 @@ class SoundController {
     gain.connect(this.ctx.destination);
 
     switch (winnerType) {
-      case 'piedra': // Golpe grave con caída de frecuencia
+      case 'piedra': // Golpe grave con armónicos audibles en móviles (260Hz -> 80Hz)
         osc.type = 'triangle';
-        osc.frequency.setValueAtTime(140, now);
-        osc.frequency.exponentialRampToValueAtTime(35, now + 0.1);
-        gain.gain.setValueAtTime(0.2, now);
-        gain.gain.exponentialRampToValueAtTime(0.005, now + 0.1);
+        osc.frequency.setValueAtTime(260, now);
+        osc.frequency.exponentialRampToValueAtTime(75, now + 0.12);
+        gain.gain.setValueAtTime(0.35, now);
+        gain.gain.exponentialRampToValueAtTime(0.005, now + 0.12);
         osc.start(now);
-        osc.stop(now + 0.1);
+        osc.stop(now + 0.12);
         break;
 
-      case 'papel': // Fricción suave
+      case 'papel': // Fricción suave y pop (450Hz -> 220Hz)
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(380, now);
-        osc.frequency.exponentialRampToValueAtTime(180, now + 0.08);
-        gain.gain.setValueAtTime(0.15, now);
+        osc.frequency.setValueAtTime(450, now);
+        osc.frequency.exponentialRampToValueAtTime(220, now + 0.08);
+        gain.gain.setValueAtTime(0.28, now);
         gain.gain.exponentialRampToValueAtTime(0.005, now + 0.08);
         osc.start(now);
         osc.stop(now + 0.08);
         break;
 
-      case 'tijeras': // Clic metálico agudo
+      case 'tijeras': // Clic metálico agudo (1100Hz -> 650Hz)
         osc.type = 'square';
-        osc.frequency.setValueAtTime(950, now);
-        osc.frequency.exponentialRampToValueAtTime(550, now + 0.07);
-        gain.gain.setValueAtTime(0.1, now);
+        osc.frequency.setValueAtTime(1100, now);
+        osc.frequency.exponentialRampToValueAtTime(650, now + 0.07);
+        gain.gain.setValueAtTime(0.2, now);
         gain.gain.exponentialRampToValueAtTime(0.005, now + 0.07);
         osc.start(now);
         osc.stop(now + 0.07);
         break;
 
-      case 'lagarto': // Gorjeo / pop rápido
+      case 'lagarto': // Gorjeo reptiliano modulado (320Hz -> 650Hz -> 180Hz)
         osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(240, now);
-        osc.frequency.linearRampToValueAtTime(450, now + 0.05);
-        osc.frequency.exponentialRampToValueAtTime(120, now + 0.1);
-        gain.gain.setValueAtTime(0.12, now);
-        gain.gain.exponentialRampToValueAtTime(0.005, now + 0.1);
+        osc.frequency.setValueAtTime(320, now);
+        osc.frequency.linearRampToValueAtTime(650, now + 0.04);
+        osc.frequency.exponentialRampToValueAtTime(180, now + 0.12);
+        gain.gain.setValueAtTime(0.25, now);
+        gain.gain.exponentialRampToValueAtTime(0.005, now + 0.12);
         osc.start(now);
-        osc.stop(now + 0.1);
+        osc.stop(now + 0.12);
         break;
 
-      case 'spock': // Efecto sci-fi / láser
+      case 'spock': // Efecto sci-fi / láser resonante (950Hz -> 250Hz)
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(800, now);
-        osc.frequency.exponentialRampToValueAtTime(160, now + 0.14);
-        gain.gain.setValueAtTime(0.18, now);
+        osc.frequency.setValueAtTime(950, now);
+        osc.frequency.exponentialRampToValueAtTime(250, now + 0.14);
+        gain.gain.setValueAtTime(0.3, now);
         gain.gain.exponentialRampToValueAtTime(0.005, now + 0.14);
         osc.start(now);
         osc.stop(now + 0.14);
@@ -133,11 +168,11 @@ class SoundController {
 
   playVictory() {
     if (this.isMuted) return;
-    this.init();
-    if (!this.ctx) return;
+    this.unlock();
+    if (!this.ctx || this.ctx.state !== 'running') return;
 
     const now = this.ctx.currentTime;
-    const notes = [261.63, 329.63, 392.00, 523.25, 659.25]; // Acorde mayor C - E - G - C5 - E5
+    const notes = [329.63, 392.00, 523.25, 659.25, 783.99]; // Acorde mayor E4 - G4 - C5 - E5 - G5
     notes.forEach((freq, index) => {
       const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
@@ -147,7 +182,7 @@ class SoundController {
       gain.connect(this.ctx.destination);
 
       const noteStart = now + index * 0.09;
-      gain.gain.setValueAtTime(0.2, noteStart);
+      gain.gain.setValueAtTime(0.28, noteStart);
       gain.gain.exponentialRampToValueAtTime(0.001, noteStart + 0.6);
       osc.start(noteStart);
       osc.stop(noteStart + 0.6);
@@ -264,16 +299,26 @@ function cacheDomElements() {
 }
 
 function setupEventListeners() {
-  // Unlock audio context on user interaction
-  window.addEventListener('click', () => soundController.init(), { once: true });
-  window.addEventListener('keydown', () => soundController.init(), { once: true });
+  // Mobile & Desktop multi-event audio unlock
+  const unlockEvents = ['touchstart', 'touchend', 'pointerdown', 'mousedown', 'keydown', 'click'];
+  unlockEvents.forEach(evt => {
+    window.addEventListener(evt, () => soundController.unlock(), { passive: true });
+  });
 
-  document.getElementById('reset-btn').addEventListener('click', resetSimulation);
-  document.getElementById('pause-btn').addEventListener('click', togglePause);
+  document.getElementById('reset-btn').addEventListener('click', () => {
+    soundController.unlock();
+    resetSimulation();
+  });
+  
+  document.getElementById('pause-btn').addEventListener('click', () => {
+    soundController.unlock();
+    togglePause();
+  });
   
   const graphBtn = document.getElementById('graph-btn');
   if (graphBtn) {
     graphBtn.addEventListener('click', () => {
+      soundController.unlock();
       gameState.showGraph = !gameState.showGraph;
       graphBtn.classList.toggle('active', gameState.showGraph);
     });
@@ -282,6 +327,7 @@ function setupEventListeners() {
   const aiBtn = document.getElementById('ai-btn');
   if (aiBtn) {
     aiBtn.addEventListener('click', () => {
+      soundController.unlock();
       gameState.aiEnabled = !gameState.aiEnabled;
       aiBtn.classList.toggle('active', gameState.aiEnabled);
       if (domElements.btnAiText) {
@@ -293,15 +339,20 @@ function setupEventListeners() {
   const soundBtn = document.getElementById('sound-btn');
   if (soundBtn) {
     soundBtn.addEventListener('click', () => {
+      soundController.unlock();
       const isMuted = soundController.toggleMute();
       soundBtn.classList.toggle('active', !isMuted);
       if (domElements.btnSoundIcon) domElements.btnSoundIcon.innerText = isMuted ? "🔇" : "🔊";
       if (domElements.btnSoundText) domElements.btnSoundText.innerText = isMuted ? "Mute" : "Sonido";
+      if (!isMuted) {
+        soundController.playFeedbackTone();
+      }
     });
   }
   
   const modeSelect = document.getElementById('game-mode');
   modeSelect.addEventListener('change', (e) => {
+    soundController.unlock();
     gameState.gameMode = e.target.value;
     updateUIVisibility();
     resetSimulation();
@@ -378,6 +429,14 @@ function togglePause() {
 function windowResized() {
   const dims = getCanvasDimensions();
   resizeCanvas(dims.w, dims.h);
+}
+
+function touchStarted() {
+  soundController.unlock();
+}
+
+function mousePressed() {
+  soundController.unlock();
 }
 
 function spawnCombatParticles(x, y, colorHex) {
