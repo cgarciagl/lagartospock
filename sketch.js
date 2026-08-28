@@ -308,8 +308,8 @@ function setup() {
 }
 
 function getEntitySize() {
-  if (width <= 480) return 17;
-  if (width <= 768) return 21;
+  if (width <= 480) return 13;
+  if (width <= 768) return 17;
   return DEFAULT_OBJECT_SIZE; // 28px en desktop intacto
 }
 
