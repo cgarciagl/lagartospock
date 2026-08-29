@@ -269,7 +269,8 @@ button.active {
   border: 1px solid var(--glass-border);
   box-shadow: var(--glass-shadow);
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
   width: 100%;
   max-width: 100%;
   animation: fadeInScale 0.8s cubic-bezier(0.16, 1, 0.3, 1) backwards;
@@ -348,55 +349,45 @@ canvas {
 }
 
 .stats-container {
-  position: absolute;
-  bottom: 24px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: calc(100% - 48px);
+  position: relative;
+  width: 100%;
   max-width: 1280px;
-  background: rgba(10, 11, 26, 0.7);
+  margin-top: 0.75rem;
+  background: rgba(10, 11, 26, 0.75);
   backdrop-filter: blur(24px) saturate(200%);
   -webkit-backdrop-filter: blur(24px) saturate(200%);
-  padding: 1.25rem;
+  padding: 0.85rem 1.25rem;
   border-radius: var(--radius-xl);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  z-index: 100;
-  pointer-events: none;
-  transition: all 0.4s ease;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  z-index: 20;
+  transition: all 0.3s ease;
 }
 
 .stats-container:hover {
   background: rgba(10, 11, 26, 0.85);
   border-color: rgba(255, 255, 255, 0.2);
-  transform: translateX(-50%) translateY(-5px);
-}
-
-.stats-container * {
-  pointer-events: auto;
 }
 
 .dashboard {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 1rem;
+  flex-wrap: nowrap;
+  gap: 0.75rem;
+  width: 100%;
+  justify-content: space-between;
 }
 
 .stat-card {
   flex: 1;
-  min-width: 140px;
+  min-width: 0;
   background: linear-gradient(145deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
-  padding: 0.8rem 1.2rem;
+  padding: 0.6rem 0.9rem;
   border-radius: var(--radius-md);
   border: 1px solid rgba(255, 255, 255, 0.05);
-  display: grid;
-  grid-template-columns: auto 1fr;
-  grid-template-areas: 
-    "icon label"
-    "icon value";
-  gap: 0.1rem 0.8rem;
+  display: flex;
   align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
   transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   position: relative;
   overflow: hidden;
@@ -413,10 +404,10 @@ canvas {
 }
 
 .stat-card:hover {
-  transform: translateY(-5px) scale(1.03);
+  transform: translateY(-3px) scale(1.02);
   background: linear-gradient(145deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
   border-color: rgba(255, 255, 255, 0.2);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
 }
 
 .stat-card:hover::after {
@@ -424,8 +415,7 @@ canvas {
 }
 
 .stat-icon {
-  grid-area: icon;
-  font-size: 2.2rem;
+  font-size: 1.6rem;
   filter: drop-shadow(0 2px 8px rgba(0,0,0,0.4));
   transition: transform 0.3s ease;
 }
@@ -435,22 +425,18 @@ canvas {
 }
 
 .stat-label {
-  grid-area: label;
   font-size: 0.75rem;
   font-weight: 700;
   text-transform: uppercase;
   color: var(--text-muted);
-  letter-spacing: 0.15em;
-  align-self: end;
+  letter-spacing: 0.1em;
 }
 
 .stat-value {
-  grid-area: value;
   font-family: 'Outfit', sans-serif;
-  font-size: 1.6rem;
+  font-size: 1.35rem;
   font-weight: 800;
   line-height: 1;
-  align-self: start;
 }
 
 .stat-card[style*="var(--piedra)"] .stat-value { color: var(--piedra); text-shadow: 0 0 15px rgba(56, 189, 248, 0.6); }
@@ -460,8 +446,8 @@ canvas {
 .stat-card[style*="var(--spock)"] .stat-value { color: var(--spock); text-shadow: 0 0 15px rgba(192, 132, 252, 0.6); }
 
 .progress-container {
-  margin-top: 1.5rem;
-  height: 12px;
+  margin-top: 0.75rem;
+  height: 10px;
   background: rgba(0, 0, 0, 0.6);
   border-radius: 6px;
   overflow: hidden;

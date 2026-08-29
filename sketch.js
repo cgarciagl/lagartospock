@@ -351,9 +351,9 @@ function getCanvasDimensions() {
   const targetW = Math.max(300, Math.min(availableWidth, CANVAS_MAX_WIDTH));
   
   const isMobile = windowWidth <= 768;
-  const marginY = isMobile ? 310 : CANVAS_MARGIN_Y;
+  const marginY = isMobile ? 310 : 330;
   const availableHeight = windowHeight - marginY;
-  const minH = isMobile ? 320 : 420;
+  const minH = isMobile ? 320 : 400;
   const targetH = Math.max(minH, Math.min(availableHeight, CANVAS_MAX_HEIGHT));
   
   return { w: targetW, h: targetH };
