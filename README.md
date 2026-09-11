@@ -1,3 +1,12 @@
+```text
+███████╗██████╗  ██████╗  ██████╗██╗  ██╗
+██╔════╝██╔══██╗██╔═══██╗██╔════╝██║ ██╔╝
+███████╗██████╔╝██║   ██║██║     █████╔╝
+╚════██║██╔═══╝ ██║   ██║██║     ██╔═██╗
+███████║██║     ╚██████╔╝╚██████╗██║  ██╗
+╚══════╝╚═╝      ╚═════╝  ╚═════╝╚═╝  ╚═╝
+```
+
 # 🦎 RPSLS Evolution: Simulation
 
 Una simulación visual dinámica de supervivencia basada en las reglas extendidas de **Piedra, Papel, Tijeras, Lagarto, Spock**. Este proyecto utiliza algoritmos de detección de colisiones optimizados y una interfaz moderna para observar la evolución de diferentes facciones en competencia.
@@ -10,15 +19,16 @@ Una simulación visual dinámica de supervivencia basada en las reglas extendida
 - **Simulación en Tiempo Real**: Observa a 100 entidades interactuar y transformarse según las reglas del juego.
 - **Dos Modalidades**:
   - **Clásico (RPS)**: El sistema tradicional de 3 elementos.
-  - **Extendido (RPSLS)**: La famosa variante popularizada por *The Big Bang Theory*.
+  - **Extendido (RPSLS)**: La famosa variante popularizada por _The Big Bang Theory_.
 - **Dashboard de Estadísticas**: Seguimiento en vivo del conteo de cada facción y barras de predominancia.
 - **Gráfico Histórico**: Visualización de la evolución poblacional a lo largo del tiempo integrada en el canvas.
 - **Rendimiento Optimizado**: Implementación de **QuadTree** para la gestión de colisiones, permitiendo una ejecución fluida incluso con un alto número de entidades.
-- **Diseño Premium**: Interfaz moderna con modo oscuro, tipografía *Inter/Outfit* y efectos de *Glassmorphism*.
+- **Diseño Premium**: Interfaz moderna con modo oscuro, tipografía _Inter/Outfit_ y efectos de _Glassmorphism_.
 
 ## 📐 Reglas de RPSLS
 
 El sistema de reglas para la modalidad extendida es el siguiente:
+
 - **Tijeras** corta a **Papel**
 - **Papel** tapa a **Piedra**
 - **Piedra** aplasta a **Lagarto**
@@ -52,4 +62,5 @@ cd lagartospock
 Inspirado en los retos de programación de **The Coding Train** y la cultura geek de **The Big Bang Theory**.
 
 ---
+
 Desarrollado con ❤️ para simulaciones dinámicas.
